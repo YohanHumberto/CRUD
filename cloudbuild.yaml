@@ -1,0 +1,11 @@
+steps:
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+    - functions
+    - deploy
+    - cf-test-sonarqube
+    - --source=.
+    - --runtime=python39
+    - --project=$_PROJECT_ID
+    - --entry-point=init
+    - --trigger-http

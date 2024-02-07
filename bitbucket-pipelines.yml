@@ -1,0 +1,56 @@
+image: python:3.11
+
+definitions:
+  steps:
+    - step: &build-step
+        name: Install requirements & exec test
+        caches:
+          - pip
+        script:
+          - pip install -r src/requirements.txt
+          - pip install -r src/requirements_dev.txt
+          - python -m pytest --cov-report xml:tests/coverage.xml --cov=. tests -s -vv
+          
+
+clone:
+  depth: full
+
+pipelines:
+  pull-requests:
+    '**':
+      - step:
+          name: "Verify PR to master"
+          script:
+            - echo $BITBUCKET_PR_DESTINATION_BRANCH
+            - /bin/bash pipeline.sh "${BITBUCKET_PR_DESTINATION_BRANCH}"
+      - step:
+          name: "Verify branch destination"
+          script:
+            - echo $BITBUCKET_PR_DESTINATION_BRANCH
+            - /bin/bash run_test.sh "${BITBUCKET_PR_DESTINATION_BRANCH}"
+            - if [ "$BITBUCKET_EXIT_CODE" != 1 ]; then exit 0 ; fi
+            - pipe: sonarsource/sonarqube-scan:2.0.0
+              variables:
+                SONAR_HOST_URL: ${SONAR_HOST_URL} # Get the value from the repository/workspace variable.
+                SONAR_TOKEN: ${SONAR_TOKEN} # Get the value from the repository/workspace variable. You shouldn't set secret in clear text here.
+          after-script:
+            - echo $BITBUCKET_EXIT_CODE
+            - if [ "$BITBUCKET_PR_DESTINATION_BRANCH" = 'stage' ]; then 
+            - export MY_MESSAGE="PR to ${BITBUCKET_PR_DESTINATION_BRANCH} OK *Not necessary run test...*"
+            - export MY_PRETEXT="SUCCESS" 
+            - else 
+            - export MY_PRETEXT="SUCCESS" 
+            - export MY_MESSAGE="PR to ${BITBUCKET_PR_DESTINATION_BRANCH} OK";
+            - fi
+            - if [ "$BITBUCKET_EXIT_CODE" = 1 ]; then 
+            - export MY_PRETEXT="FAILED" 
+            - export MY_MESSAGE="*Error in Pipeline!* ---- PIPELINE UUID - ${BITBUCKET_PIPELINE_UUID} ---- PR to ${BITBUCKET_PR_DESTINATION_BRANCH} cc <!subteam^S01HNREKMGF>"; 
+            - fi
+            - pipe: atlassian/slack-notify:2.3.0
+              variables:
+                WEBHOOK_URL: $SLACK_WEBHOOK_URL
+                PRETEXT: "$BITBUCKET_REPO_FULL_NAME - $MY_PRETEXT"
+                MESSAGE: $MY_MESSAGE
+              
+  master:
+    - step: *build-step

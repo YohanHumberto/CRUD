@@ -1,0 +1,51 @@
+[
+    {
+       "id":6,
+       "order_id":100,
+       "customer_id":1,
+       "order_address_id":1,
+       "date_created":"Thu, 20 Jan 2022 19:17:36 +0000",
+       "tracking_number":"35273",
+       "merchant_shipping_cost":"0.0000",
+       "shipping_method":"None",
+       "comments":"",
+       "shipping_provider":"",
+       "tracking_carrier":"",
+       "tracking_link":"",
+       "billing_address":{
+          "first_name":"Luis",
+          "last_name":"Toro",
+          "company":"",
+          "street_1":"Calle falsa 123",
+          "street_2":"",
+          "city":"Santiago",
+          "state":"Santiago",
+          "zip":"8340261",
+          "country":"Chile",
+          "country_iso2":"CL",
+          "phone":"",
+          "email":"luis.toro@enviame.io"
+       },
+       "shipping_address":{
+          "first_name":"Luis",
+          "last_name":"Toro",
+          "company":"",
+          "street_1":"Calle falsa 123",
+          "street_2":"",
+          "city":"Santiago",
+          "state":"Santiago",
+          "zip":"8340261",
+          "country":"Chile",
+          "country_iso2":"CL",
+          "phone":"",
+          "email":"luis.toro@enviame.io"
+       },
+       "items":[
+          {
+             "order_product_id":1,
+             "product_id":0,
+             "quantity":1
+          }
+       ]
+    }
+ ]

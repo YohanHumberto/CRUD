@@ -1,0 +1,8 @@
+functions-framework
+pytest
+autopep8==1.6.0
+responses==0.16.0
+mock
+requests_mock
+coverage
+pytest-cov
